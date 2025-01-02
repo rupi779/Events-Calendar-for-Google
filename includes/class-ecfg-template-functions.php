@@ -24,8 +24,8 @@ class ECFG_template_functions {
 		
 	public function __construct() {
 		$this->error_message = '';
-		$this->calender_id = $this->ECFG_option_field('gc-general-settings','gc_calender_id'); 
-	    $this->client_key =  $this->ECFG_option_field('gc-general-settings','gc_events_api_key'); 
+		$this->calender_id = $this->ECFG_option_field('gc_general_settings','gc_calender_id'); 
+	    $this->client_key =  $this->ECFG_option_field('gc_general_settings','gc_events_api_key'); 
 			
 	}
 	
@@ -34,16 +34,16 @@ class ECFG_template_functions {
 	{
 	
 	
-	    $general_settings = get_option('gc-general-settings');
+	    $general_settings = get_option('gc_general_settings');
 		if(empty($general_settings))
 		{
-			echo '<div class="gc_errors"><p>'.esc_html__('Please go to plugin settings page and save your settings.','ecfg-events').'</p></div>';
+			echo '<div class="gc_errors"><p>'.esc_html__('Please go to plugin settings page and save your settings.','events-calendar-for-google').'</p></div>';
 			exit;
 		}
 		
 		if(is_wp_error($list_events))
 		{
-		       echo '<div class="gc_errors"><p>' . esc_html__($list_events->get_error_message()) .'. '. esc_html__('Please check your internet connection.','ecfg-events').'</p></div>';
+		       echo '<div class="gc_errors"><p>' . esc_html($list_events->get_error_message()) .'. '. esc_html__('Please check your internet connection.','events-calendar-for-google').'</p></div>';
 				exit;
 			
 		}
@@ -51,7 +51,7 @@ class ECFG_template_functions {
 		$api_errors = json_decode($list_events['body']);
 		if(isset($api_errors->error) && $api_errors->error != '')
 		{
-		echo '<div class="gc_errors"><p>'.esc_html__($api_errors->error->message,'ecfg-events').'</p></div>';
+		echo '<div class="gc_errors"><p>'.esc_html($api_errors->error->message).'</p></div>';
 		exit;
 		}
 	
@@ -76,7 +76,7 @@ class ECFG_template_functions {
 		{
 			$value = '';
 			return $value;
-			//$this->error_message = esc_html__('Please go to plugin settings page and save your settings','ecfg-events');
+			//$this->error_message = esc_html__('Please go to plugin settings page and save your settings','events-calendar-for-google');
 		}
 			
 	}
@@ -92,12 +92,12 @@ class ECFG_template_functions {
 		$value = get_option( $option_value );
 		if(isset($value) && $value != '')
 		{
-			$value = $value[$group_section][0][$key];
+			$value = $value[$group_section][$key];
 			return $value;
 		}
 		else
 		{
-			$this->error_message = esc_html__('Please go to plugin settings page and save your settings','ecfg-events');
+			$this->error_message = esc_html__('Please go to plugin settings page and save your settings','events-calendar-for-google');
 		}
 			
 	}
@@ -113,9 +113,12 @@ class ECFG_template_functions {
 		
 		$params = array();
 		/*Get current date*/
-		$current_date  = date('Y-m-d H:i:s');
+		$event_timezone = $this->ECFG_option_group_field('gc_advanced_settings','gc_event_timezone','gc_custom_timezone');
+		$timezone = new DateTimeZone($event_timezone); // Set the desired timezone
+		$datetime = new DateTime('now');
+		
 		/*Convert it to google calendar's rfc_format */
-		$rfc_format = date("c", strtotime($current_date));
+		$rfc_format = $datetime->format('c');
 		
 		$params[] = 'orderBy=startTime';
 		$params[] ='maxResults=100';
@@ -161,12 +164,12 @@ class ECFG_template_functions {
 		foreach($cal_events as $single_event)
 		{
 			
-		    if(isset($single_event->start->date) && strpos(json_encode($single_event), 'date') > 0 )
+		    if(isset($single_event->start->date) && property_exists($single_event, 'start') && property_exists($single_event->start, 'date') )
 				{   
 					$all_day = 'yes'; 
 					$startdate = $single_event->start->date;
 					$enddate = $single_event->end->date;
-					$event_date =  date('Y-m-d', strtotime($startdate));
+					$event_date = (new DateTime($startdate))->format('Y-m-d');
 					
 				}
 		   if(isset($single_event->start->dateTime))
@@ -174,7 +177,7 @@ class ECFG_template_functions {
 					$all_day = 'no'; 
 					$startdate = $single_event->start->dateTime;
 					$enddate = $single_event->end->dateTime;
-					$event_date =  date('Y-m-d', strtotime($startdate));
+					$event_date = (new DateTime($startdate))->format('Y-m-d');
 				}  
 			
 						
@@ -255,7 +258,7 @@ class ECFG_template_functions {
 	             $output = ''; 
 				             
 				               $output .='<p class="gc_total_pages" data-id="'.$total_pages.'" style="display:none;"></p>';
-							   $output .='<a class="page-numbers prev" href="#" data-id="'.$prev.'" style="display:none;">'.esc_html__('Prev','ecfg-events').'</a>';
+							   $output .='<a class="page-numbers prev" href="#" data-id="'.$prev.'" style="display:none;">'.esc_html__('Prev','events-calendar-for-google').'</a>';
 							 
 							
 								if(!empty($total_pages)){
@@ -267,7 +270,7 @@ class ECFG_template_functions {
 									}
 								}
 								
-							 	$output .='<a class="page-numbers next" href="#" data-id="'.$next.'" >'.esc_html__('Next','ecfg-events').'</a>';
+							 	$output .='<a class="page-numbers next" href="#" data-id="'.$next.'" >'.esc_html__('Next','events-calendar-for-google').'</a>';
 							
 								
 								

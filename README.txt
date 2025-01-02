@@ -1,11 +1,11 @@
 === Events Calendar for Google ===
 Contributors: coolcoders,blueplugins
 Donate link: https://blueplugins.com/
-Tags: calender, google calendar , event calendar, event, events, calendar
+Tags: calender, google calendar , event calendar, event, events
 Requires at least: 4.5
-Tested up to: 6.3
+Tested up to: 6.7
 Requires PHP: 5.6
-Stable tag: 2.1.0
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,12 @@ Please read the documentation for any other details.
 4. settings panel 
 
 == Changelog ==
+<h2> Version 3.0.0| 24 Dec 2024 </h2>
+<pre>
+ Improvement: Sanitization of code againts external attacks. 
+ Improvement: Removed Cmb2 dependency of plugin . 
+
+</pre>
 <h2> Version 2.1.0| 1 Sep 2023 </h2>
 <pre>
  Improvement: Added a new setting options where people can set timezone setting according to their preference . 
@@ -125,7 +131,6 @@ Please read the documentation for any other details.
  Improvement: Rating and Review widget added .
  Improvement: Added translations for spanish ,chinese and french .
  Improvement: Activation error “headers already sent” removed .
- Improvement: Removes cmb2/languages folder .
  Improvement: Removed activation and deactivation files .
 </pre>
 

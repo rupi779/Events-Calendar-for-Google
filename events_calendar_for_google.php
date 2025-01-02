@@ -6,12 +6,12 @@
  * @wordpress-plugin
  * Plugin Name:       Events Calendar for Google
  * Description:       List Google Calender with customized layouts. Manange your Calender events Style from wordpress dashboard.
- * Version:           2.1.0
+ * Version:           3.0.0
  * Author:            Blue Plugins
  * Author URI:        https://blueplugins.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       ecfg-events
+ * Text Domain:       events-calendar-for-google
  * Domain Path:       /languages
  */
 
@@ -23,7 +23,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'ECFG_VERSION', '2.1.0' );
+define( 'ECFG_VERSION', '3.0.0' );
 define('ECFG_PLUGIN_DIR',plugin_dir_path( __FILE__ ));
 
 
@@ -56,7 +56,7 @@ class ECFG_Events_Calendar_for_Google{
 		if ( defined( 'ECFG_VERSION' ) ) {
 			$this->version = ECFG_VERSION;
 		} else {
-			$this->version = '2.1.0';
+			$this->version = '3.0.0';
 		}
 		$this->plugin_name = 'events_calendar_google';
 
@@ -82,15 +82,7 @@ class ECFG_Events_Calendar_for_Google{
 	 */
 	private function ecfg_load_dependencies() {
 
-		 /**
-        * The class includes cmb2 third party code for settings api 
-        */
-		if ( file_exists( ECFG_PLUGIN_DIR . '/cmb2/init.php' ) )  
-            {
-                require_once ECFG_PLUGIN_DIR . 'cmb2/init.php'; 
-				
-			}
-	    		
+			
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
@@ -149,11 +141,14 @@ class ECFG_Events_Calendar_for_Google{
 		$ECFG_events_admin = new ECFG_events_calendar_google_Admin( $this->get_plugin_name(), $this->get_version() );
 		add_action( 'admin_enqueue_scripts', array($ECFG_events_admin, 'ECFG_admin_enqueue_styles' ));
 		add_action( 'admin_enqueue_scripts', array($ECFG_events_admin, 'ECFG_admin_enqueue_scripts' ));
-		add_action( 'cmb2_admin_init', array($ECFG_events_admin, 'ECFG_admin_general_settings' ));
-	    add_action( 'cmb2_before_form',array($ECFG_events_admin,'ECFG_option_page_menu'));
-		add_filter( 'plugin_action_links_' .plugin_basename(__FILE__),array($ECFG_events_admin,'ECFG_admin_settings_link'));
-		add_action( 'admin_init', array( $ECFG_events_admin, 'ECFG_notice_actions' ));
-		add_action( 'admin_notices', array($ECFG_events_admin,'ECFG_plugin_notice' ));
+	 	add_filter( 'plugin_action_links_' .plugin_basename(__FILE__),array($ECFG_events_admin,'ECFG_admin_settings_link'));
+		//add_action( 'admin_notices', array($ECFG_events_admin,'ECFG_plugin_notice' )); //shows plugins ratings bar
+		add_action('admin_menu', array($ECFG_events_admin,'ECGF_custom_admin_menu')); /*Admin Menu on left dashboard*/
+		/*needed to add menu again*/
+		//add_action( 'admin_init', array( $ECFG_events_admin, 'ECFG_notice_actions' )); //remove rating bar once reveiwed
+		add_action('admin_init', array($ECFG_events_admin,'ECFG_admin_settings_pages')); // including setting fields pages
+    		
+		/*including setting pages*/
 	
 	}
 

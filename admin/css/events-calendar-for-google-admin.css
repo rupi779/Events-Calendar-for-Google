@@ -2,7 +2,7 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
- #toplevel_page_gc-general-settings .dashicons-calendar-alt:before {
+ #toplevel_page_ecfg_general_settings .dashicons-calendar-alt:before {
      color: #00f3ff !important;
 }
 .ecfg-review-wrapper {
@@ -36,9 +36,11 @@ a.ecfg-notice-action.ecfg-done {
     width: 100%;
     margin: 0px auto;
 }
-form#gc-pro-features .submit {
+
+form.gc_pro_page table th {
     display: none;
-}
+}/*used to hide table header for pro image*/
+
 .gc_pro_link {
     margin: 20px 0px;
     text-align: right;
@@ -52,7 +54,45 @@ a.try_pro {
     font-family: serif;
     margin: 0px auto;
 }
-/*hide numeric timezone selection*/
-.cmb2-select-timezone optgroup[label="Manual Offsets"] {
+/*fields settings*/
+.ecfg-ad-field-group {
+    margin-bottom: 20px;
+}
+
+.ecfg-ad-field-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.ecfg-ad-field-label {
+    flex: 1;
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 150px;
+}
+
+.ecfg-ad-field-input {
+    flex: 2;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.color-picker {
+    max-width: 200px;
+}
+/*Hide table settings on advance settings section*/
+.ecfg_advance_settings_wrap form {
+    width: 50%;
+}
+
+.ecfg_advance_settings_wrap form table tr th {
     display: none;
+}
+.ecfg_advance_settings_wrap h2 {
+    background: #c7c3c363;
+    padding: 10px;
+	border: 1px solid #d7d3d3;
 }

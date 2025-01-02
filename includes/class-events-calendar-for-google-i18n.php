@@ -35,7 +35,7 @@ class ECFG_events_calendar_google_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'ecfg-events',
+			'events-calendar-for-google',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);

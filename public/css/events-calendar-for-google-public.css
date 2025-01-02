@@ -65,6 +65,9 @@ margin: 0px 5px;
 	text-transform: capitalize;
 }
 .tgse_title h1, .tgse_title h2, .tgse_title h3, .tgse_title h4, .tgse_title h5, .tgse_title h6 {
+	 font-family: var(--tgc-title-fontfamily);
+     color:  var(--tgc-desc-title-color);
+     text-transform: capitalize;
      margin: 5px auto;
 }
 /*Event meta*/
@@ -200,6 +203,9 @@ span.tgse_icon {
 }
 .tgse_section_bottom {
     padding: 10px 20px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 .tgse_section_bottom .tgse_readmore {
     text-align: center;

@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.6.2; wp-6.0\n"
-"X-Domain: ecfg-events"
+"X-Domain: events-calendar-for-google"
 
 #: includes/templates/attributes/time.php:27
 msgid "All Day Event"

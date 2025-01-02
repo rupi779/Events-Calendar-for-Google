@@ -60,8 +60,8 @@ class ECFG_events_calendar_google_Public {
 		require_once ECFG_PLUGIN_DIR . 'includes/class-ecfg-custom-hooks.php';
 		$this->template_function = new ECFG_template_functions();
 		$this->custom_hooks = new ECFG_Define_Custom_Hooks();
-		$this->layout =  $this->template_function->ECFG_option_field('gc-general-settings','gc_calender_layout'); 
-		//$date_design = $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_date_section_style','date_design');
+		$this->layout =  $this->template_function->ECFG_option_field('gc_general_settings','gc_calender_layout'); 
+		//$date_design = $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_date_section_style','date_design');
 		
 		
 
@@ -111,15 +111,18 @@ class ECFG_events_calendar_google_Public {
 		{
 		$client_key = $this->template_function->client_key; 
 		$calender_id = $this->template_function->calender_id; 
-		$current_date  = date('Y-m-d'); 
-		$timezone =  $this->custom_hooks->ecfg_google_timezone_function();
+		$timezone = new DateTimeZone($this->custom_hooks->ecfg_google_timezone_function());
+	    $current_date = new DateTime('now', $timezone);
+		$formatted_date = $current_date->format('Y-m-d H:i');
+		
+		
 		/*the above timezone function sets the calendar timezone .further called by fullcalendar-events.js*/ 
 		
 		$ajax_objects = array( 
 		    'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'api' => $client_key,
 			'id' => $calender_id,
-			'current_date'=>$current_date,
+			'current_date'=>$formatted_date,
 			'cal_timezone'=>$timezone,
 		); 
         wp_enqueue_script( 'gc-fullcalender-layout', plugin_dir_url( __FILE__ ) . 'js/gc-fullcalender.js', array( 'jquery' ), $this->version, false );   
@@ -147,24 +150,24 @@ class ECFG_events_calendar_google_Public {
 	public  function ECFG_admin_footer_js() {
 		
 		$layout =  $this->layout;
-		$tgc_date_bc_color = $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_date_section_style','date-bc-color');
+		$tgc_date_bc_color = $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_date_section_style','date-bc-color');
 		$tgc_date_bc_color  = isset($tgc_date_bc_color)? $tgc_date_bc_color : '#08267c';
-		$tgc_date_text_color = $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_date_section_style','date-text-color');
+		$tgc_date_text_color = $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_date_section_style','date-text-color');
 		$tgc_date_text_color = isset($tgc_date_text_color) ? $tgc_date_text_color : '#ffffff'; 
 		/*event description style*/
-		$tgc_desc_bc_color =  $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_event_desc_style','desc-bc-color');
+		$tgc_desc_bc_color =  $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_event_desc_style','desc-bc-color');
         $tgc_desc_bc_color  = $tgc_desc_bc_color ? $tgc_desc_bc_color : '#ffffff';
-		$title_color =  $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_event_desc_style','title_color');
+		$title_color =  $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_event_desc_style','title_color');
         $title_color  = $title_color ? $title_color : '#08267c';
-		$icon_color =  $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_event_desc_style','icon_color');
+		$icon_color =  $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_event_desc_style','icon_color');
 		$icon_color  = $icon_color ? $icon_color : '#08267c';
 		/*button style variables*/
-		$tgc_button_bc_color = $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_button_style','button_bc');
+		$tgc_button_bc_color = $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_button_style','button_bc');
 		$tgc_button_bc_color  = isset($tgc_button_bc_color)? $tgc_button_bc_color : '#08267c';
-		$tgc_button_text_color = $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_button_style','button_text');
+		$tgc_button_text_color = $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_button_style','button_text');
 		$tgc_button_text_color = isset($tgc_button_text_color) ? $tgc_button_text_color : '#ffffff'; 
-		$tgc_button_hover_color = $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_button_style','button_bc_hover');
-		$tgc_button_hover_text_color = $this->template_function->ECFG_option_group_field('gc-advanced-settings','gc_button_style','button_text_hover');
+		$tgc_button_hover_color = $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_button_style','button_bc_hover');
+		$tgc_button_hover_text_color = $this->template_function->ECFG_option_group_field('gc_advanced_settings','gc_button_style','button_text_hover');
 		
 		
 		?>		
@@ -251,13 +254,15 @@ class ECFG_events_calendar_google_Public {
 						 var data = {
                     		action: 'ECFG_events_pagination',
                     		curpage: current_page,
+							nonce  : '<?php echo esc_js(wp_create_nonce( 'ecfg_pagination_nonce' ));?>',
 							};
 							
-							jQuery.post( '<?php echo $admin_url; ?>' + 'admin-ajax.php', data, function( response )
+							jQuery.post( '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', data, function( response )
 							{
-						    jQuery('#ecfg_events_wrap').html();											
-							jQuery('#ecfg_events_wrap').html(response);
-						
+							            //console.log(data);     
+										jQuery('#ecfg_events_wrap').html();											
+										jQuery('#ecfg_events_wrap').html(response);
+							
 							});  
 							
 						});
@@ -280,10 +285,20 @@ class ECFG_events_calendar_google_Public {
 		{
 		    $template_function  = new ECFG_template_functions();
 			$layout =  $this->layout;
-		    $current_page = $_POST['curpage'];
+			
+			 if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash( $_POST['nonce'] )), 'ecfg_pagination_nonce' ) ) {
+               echo 'invalid nonce';
+			
+            }
+			
+		    if ( isset( $_POST['curpage'] ) ) {
+				$current_page = intval( wp_unslash( $_POST['curpage'] ) );  // Sanitize 'curpage' as an integer
+			} else {
+				$current_page = 1;  // Set default value if 'curpage' is not set
+			}
 			$events = $template_function->ECFG_get_calender_events();
 			$total_events = count($events);
-		 	$events_to_show = $template_function->ECFG_option_group_field('gc-advanced-settings','gc_pagination','gc_event_per_page');
+		 	$events_to_show = $template_function->ECFG_option_group_field('gc_advanced_settings','gc_pagination','gc_event_per_page');
 			if($events_to_show == '' || $events_to_show == 0 || $events_to_show > $total_events)
 			{
 				$events_to_show = $total_events;
@@ -296,7 +311,7 @@ class ECFG_events_calendar_google_Public {
 			{
 				 $events_limit = $total_events;
 			}
-							          
+					          
 			for($i = $intiate; $i < $events_limit; $i++)
 					{
 						$start_date = $events[$i]['start_date'];
@@ -312,9 +327,11 @@ class ECFG_events_calendar_google_Public {
 						include plugin_dir_path( dirname( __FILE__ ) ). 'includes/templates/'.$layout.'.php'; 
 						$file_included = ob_get_contents();
 						ob_end_clean();
-					 echo $output = $file_included;  
-					}/*end for loop*/	
-		
+						
+						echo wp_kses_post( $file_included );
+					}/*end for loop*/
+					
+				 
 			exit;
 	
 		}
@@ -332,6 +349,7 @@ class ECFG_events_calendar_google_Public {
 			$layout =  $this->layout;
 			$events = $template_function->ECFG_get_calender_events();
 			$total_events = count($events);
+			$allowed_layouts = ['list', 'grid', 'google_calendar']; 
 			
 			if($total_events == 0)
 			{
@@ -341,7 +359,7 @@ class ECFG_events_calendar_google_Public {
 			else
 			{
 				
-				$events_to_show = $template_function->ECFG_option_group_field('gc-advanced-settings','gc_pagination','gc_event_per_page');
+				$events_to_show = $template_function->ECFG_option_group_field('gc_advanced_settings','gc_pagination','gc_event_per_page');
 				$show_pagination = 'block';
 				if($events_to_show == '' || $events_to_show == 0 ||  $events_to_show > $total_events)
 				{
@@ -363,31 +381,36 @@ class ECFG_events_calendar_google_Public {
 							
 						}
 								
-						else{
+						else {
 							
 							$output.='<div id="ecfg_events_wrap" class="the_gc_event_'.$layout.'">';
-											
-							for($i = 0; $i < $events_to_show; $i++)
-							{
-								$start_date = $events[$i]['start_date'];
-								$end_date = $events[$i]['end_date'];
-								$event_timezone = $events[$i]['timezone'];
-								$event_title = sanitize_text_field($events[$i]['name']);
-								$event_content = wp_kses_post($events[$i]['description']);
-								$event_location = wp_kses_post($events[$i]['location']);
-								$event_link = esc_url_raw($events[$i]['link']);
-								$alldayevent = $events[$i]['all_day'];
+								if (in_array($layout, $allowed_layouts))
+								{					
+								for($i = 0; $i < $events_to_show; $i++)
+								{
+									$start_date = $events[$i]['start_date'];
+									$end_date = $events[$i]['end_date'];
+									$event_timezone = $events[$i]['timezone'];
+									$event_title = sanitize_text_field($events[$i]['name']);
+									$event_content = wp_kses_post($events[$i]['description']);
+									$event_location = wp_kses_post($events[$i]['location']);
+									$event_link = esc_url_raw($events[$i]['link']);
+									$alldayevent = $events[$i]['all_day'];
+									
+									ob_start();
+									include plugin_dir_path( dirname( __FILE__ ) ). 'includes/templates/'.$layout.'.php'; 
+									$file_included = ob_get_contents();
+									ob_end_clean();
+									$output.= $file_included;  
+								}/*end for loop*/	
+								$output.='</div>';	
 								
-								ob_start();
-								include plugin_dir_path( dirname( __FILE__ ) ). 'includes/templates/'.$layout.'.php'; 
-								$file_included = ob_get_contents();
-								ob_end_clean();
-								$output.= $file_included;  
-							}/*end for loop*/	
-							$output.='</div>';	
-							
-							$output.='<div class="gc_load_more_events" style="display:'.$show_pagination.'">'.$paginate.'</div>';				
-						
+								$output.='<div class="gc_load_more_events" style="display:'.$show_pagination.'">'.$paginate.'</div>';				
+								}   
+                                else
+                                {
+									$output.= '<p>Invalid layout specified.</p>';
+								}									
 							}/*end for layout condition*/
 						
 						$output.='</div>';

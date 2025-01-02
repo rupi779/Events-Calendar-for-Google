@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var calendar_api =  events_objects.api; 
 	var calendar_id = events_objects.id; 
   var timezone = events_objects.cal_timezone; 
-	
+  	
   var calendar = new FullCalendar.Calendar(calendarEl, {
     timeZone: timezone,
 	//locale: 'es', for language intialization some day
