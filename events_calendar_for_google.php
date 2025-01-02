@@ -21,7 +21,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Currently plugin version.
+ * Currently plugin version 3.0.0.
  */
 define( 'ECFG_VERSION', '3.0.0' );
 define('ECFG_PLUGIN_DIR',plugin_dir_path( __FILE__ ));
